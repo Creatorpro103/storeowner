@@ -24,6 +24,13 @@
       #so-word { font-family: 'Anton', Impact, sans-serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 4rem); line-height: 1.05; letter-spacing: 0.01em; text-transform: uppercase; }
       #so-bar { width: min(420px, 76vw); height: 26px; margin-top: 22px; background: #FFFDF7; border: 3px solid #2B2012; border-radius: 999px; box-shadow: 4px 4px 0 rgba(43,32,18,0.3); overflow: hidden; }
       #so-bar-fill { width: 0; height: 100%; background: #3E7CB1; transition: width 0.25s ease; }
+      #so-pct { margin-top: 14px; font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+      .so-back { color: #2B2012; font-family: 'Inter', Arial, sans-serif; font-weight: 700; text-decoration: none; }
+      .so-back:hover { text-decoration: underline; }
+      #so-loading .so-back { margin-top: 26px; padding: 11px 22px; background: #FFFDF7; border: 2.5px solid #2B2012; border-radius: 10px; box-shadow: 4px 4px 0 rgba(43,32,18,0.5); }
+      #so-loading .so-back:hover { text-decoration: none; transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(43,32,18,0.5); }
+      #unity-footer .so-back { float: right; height: 28px; margin: 3px 10px 0 14px; padding: 0 12px; font-size: 13px; line-height: 23px; background: #FFFDF7; border: 2.5px solid #2B2012; border-radius: 10px; box-sizing: border-box; }
+      #unity-footer .so-back:hover { text-decoration: none; background: #ECE0C8; }
       @keyframes so-swing { 0%, 100% { transform: rotate(-11deg); } 50% { transform: rotate(11deg); } }
       @media (prefers-reduced-motion: reduce) { #so-tag { animation: none; } }
     </style>
@@ -37,10 +44,10 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-      <div id="so-loading" role="status"><div id="so-tag"></div><div id="so-word">Loading</div><div id="so-bar" role="progressbar" aria-label="Loading progress"><div id="so-bar-fill"></div></div></div> <div id="unity-warning"> </div>
+      <div id="so-loading" role="status"><div id="so-tag"></div><div id="so-word">Loading</div><div id="so-bar" role="progressbar" aria-label="Loading progress"><div id="so-bar-fill"></div></div><div id="so-pct">0%</div><a class="so-back" href="/">Back to homepage</a></div> <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
+        <div id="unity-fullscreen-button"></div><a class="so-back" href="/">Back to homepage</a>
         <div id="unity-build-title">Store Owner</div>
       </div>
     </div>
@@ -176,8 +183,8 @@
       script.src = loaderUrl;
       script.onload = () => {
         var loading = document.querySelector("#so-loading");
-        var fill = document.querySelector("#so-bar-fill"), shown = 0;
-        var setBar = (p) => { shown = Math.max(shown, p); fill.style.width = 100 * shown + "%"; };
+        var fill = document.querySelector("#so-bar-fill"), pct = document.querySelector("#so-pct"), shown = 0;
+        var setBar = (p) => { shown = Math.max(shown, p); fill.style.width = 100 * shown + "%"; pct.textContent = Math.floor(100 * shown) + "%"; };
         joinDataParts((p) => setBar(0.85 * p)).then((url) => {
           config.dataUrl = url;
           return createUnityInstance(canvas, config, (p) => setBar(0.85 + 0.15 * p));
@@ -192,6 +199,7 @@
                 document.querySelector("#so-tag").style.animation = "none";
                 document.querySelector("#so-word").textContent = "Could not load";
                 document.querySelector("#so-bar").style.display = "none";
+                pct.style.display = "none";
                 unityShowBanner("The game could not load: " + message, "error");
               });
             };
